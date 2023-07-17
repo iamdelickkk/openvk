@@ -244,14 +244,18 @@ final class Photos extends VKAPIRequestHandler
             }
         }
 
-        $album = new Album;
-        $album->setOwner(isset($club) ? $club->getId() * -1 : $this->getUser()->getId());
-        $album->setName($title);
-        $album->setDescription($description);
-        $album->setCreated(time());
-        $album->save();
-
-        return $album->toVkApiStruct($this->getUser());
+        if(!empty($title) && !empty($description) && !ctype_space($title) && !ctype_space($description)){
+            $album = new Album;
+            $album->setOwner(isset($club) ? $club->getId() * -1 : $this->getUser()->getId());
+            $album->setName($title);
+            $album->setDescription($description);
+            $album->setCreated(time());
+            $album->save();
+    
+            return $album->toVkApiStruct($this->getUser());
+        }else{
+            header("Location: ".$_SERVER['REQUEST_URI']);
+        }
     }
 
     function editAlbum(int $album_id, int $owner_id, string $title, string $description = "", int $privacy = 0)
